@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 76" role="img" aria-label="Screenly">
+  <defs>
+    <linearGradient id="screenly-bg" x1="10" y1="62" x2="62" y2="12" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#641bff"/>
+      <stop offset="0.55" stop-color="#8f46ff"/>
+      <stop offset="1" stop-color="#d45cff"/>
+    </linearGradient>
+    <linearGradient id="screenly-strip" x1="19" y1="17" x2="52" y2="55" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#ffffff"/>
+      <stop offset="0.45" stop-color="#f6f0ff"/>
+      <stop offset="1" stop-color="#d9c4ff"/>
+    </linearGradient>
+  </defs>
+  <rect x="4" y="8" width="60" height="60" rx="16" fill="url(#screenly-bg)"/>
+  <path fill="url(#screenly-strip)" d="M25 16h22l-19 11 24 12-21 21H13l20-19-24-12 16-13Z"/>
+  <path fill="#8f46ff" d="M31 25h15l-12 7 12 6-8 8-18-9 11-12Z" opacity="0.9"/>
+  <path fill="#ffffff" d="M24 17h5v4h-5v-4Zm9 0h5v4h-5v-4Zm9 0h5v4h-5v-4Zm-18 39h5v4h-5v-4Zm9 0h5v4h-5v-4Zm9 0h5v4h-5v-4Z" opacity="0.9"/>
+  <text x="86" y="51" fill="#111827" font-family="Arial, Helvetica, sans-serif" font-size="41" font-weight="800" letter-spacing="0">Screenly</text>
+</svg>

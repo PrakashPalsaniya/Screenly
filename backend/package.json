@@ -1,0 +1,40 @@
+{
+  "name": "screenly-backend",
+  "version": "1.0.0",
+  "description": "Screenly movie booking system",
+  "main": "src/server.js",
+  "scripts": {
+    "dev": "nodemon src/server.js",
+    "start": "node src/server.js",
+    "seed:theaters": "node src/scripts/seed-theaters.js",
+    "sync:posters": "node src/scripts/sync-posters.js"
+  },
+  "author": "ProgrammingWithAmrit",
+  "license": "ISC",
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.1045.0",
+    "amqplib": "^1.0.3",
+    "axios": "^1.16.0",
+    "bcrypt": "^6.0.0",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "crypto": "^1.0.1",
+    "dayjs": "^1.11.13",
+    "dotenv": "^17.0.1",
+    "express": "^5.1.0",
+    "http-errors": "^2.0.0",
+    "ioredis": "^5.10.0",
+    "jsonwebtoken": "^9.0.2",
+    "mailgen": "^2.0.29",
+    "mongoose": "^8.16.1",
+    "nanoid": "^5.1.7",
+    "nodemailer": "^7.0.4",
+    "p-limit": "^7.3.0",
+    "razorpay": "^2.9.6",
+    "socket.io": "^4.8.3",
+    "zod": "^3.25.67"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
+}
