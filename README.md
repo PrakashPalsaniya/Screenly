@@ -393,19 +393,6 @@ Please follow existing code patterns and keep commits small and focused.
 
 ---
 
-## 📄 Additional Docs
-
-| Document | Description |
-|---|---|
-| [`CINEBOOK_EXPLANATION.md`](./CINEBOOK_EXPLANATION.md) | High-level project overview |
-| [`CINEBOOK_FLOW.md`](./CINEBOOK_FLOW.md) | Application flow & data flow diagrams |
-| [`CONCURRENCY_FIXES_IMPLEMENTATION.md`](./CONCURRENCY_FIXES_IMPLEMENTATION.md) | How seat locking was implemented |
-| [`CONCURRENCY_FIXES_QUICK_REFERENCE.md`](./CONCURRENCY_FIXES_QUICK_REFERENCE.md) | Quick cheat sheet for concurrency patterns |
-| [`REDIS_SETUP_GUIDE.md`](./REDUX_SETUP_GUIDE.md) | Frontend Redux setup guide |
-| [`GITHUB_DEPLOYMENT_SECURITY.md`](./GITHUB_DEPLOYMENT_SECURITY.md) | CI/CD and secrets best practices |
-
----
-
 <div align="center">
 
 Made with ❤️ by [Prakash Palsaniya](https://github.com/PrakashPalsaniya)
