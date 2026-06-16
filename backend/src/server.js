@@ -47,7 +47,8 @@ async function startServer() {
   });
 
   httpServer.listen(port, () => {
-    console.log(`Listening on port: ${port}`);
+    const env = process.env.NODE_ENV || "development";
+    console.log(`[${new Date().toISOString()}] Server running on port ${port} (${env})`);
   });
 }
 
