@@ -14,9 +14,16 @@ function globalErrorHandler(error, _req, res, _next) {
     }));
   }
 
+  // Log the full error internally for debugging
+  if (statusCode >= 500) {
+    console.error("[Server Error]", error);
+  }
+
+  // Never expose internal stack traces or raw error details to the client
+  const isProduction = process.env.NODE_ENV === "production";
   res.status(statusCode).json({
     success: false,
-    message,
+    message: isProduction && statusCode >= 500 ? "Something went wrong!" : message,
     errors,
   });
 }

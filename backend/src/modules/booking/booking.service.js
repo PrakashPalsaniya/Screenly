@@ -159,8 +159,6 @@ const createBooking = async (bookingData, userId) => {
   } = bookingData;
   const normalizedSeats = normalizeSeats(seats);
 
-  await assertSeatLocksOwnedByUser(showId, normalizedSeats, userId);
-
   const bookingRef = generateBookingReference();
 
   for (let attempt = 1; attempt <= 3; attempt++) {
