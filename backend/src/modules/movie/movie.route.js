@@ -7,6 +7,7 @@ const { isVerifiedUser, isAdmin } = require("../../middlewares/auth.middleware")
 
 const router = express.Router();
 
+// Admin: manually create a single movie entry
 router.post(
   "/",
   isVerifiedUser,
@@ -15,13 +16,7 @@ router.post(
   MovieController.createMovie
 );
 
-router.post(
-  "/sync-tmdb",
-  isVerifiedUser,
-  isAdmin,
-  MovieController.syncMoviesFromTmdb
-);
-
+// Public: read endpoints
 router.get("/", MovieController.getMovies);
 router.get("/recommended", MovieController.getTopRecommendedMovies);
 router.get("/:id", MovieController.getMovieById);
