@@ -9,12 +9,12 @@ import {
   Film,
   MapPin,
   Monitor,
-  RefreshCw,
+
   Search,
   Send,
   SlidersHorizontal,
 } from "lucide-react";
-import { createBulkShows, getAllMovies, getAllTheaters, syncMoviesFromTmdb } from "../apis";
+import { createBulkShows, getAllMovies, getAllTheaters } from "../apis";
 import AdminFilterDialog from "../components/admin/AdminFilterDialog";
 import {
   getMovieCertification,
@@ -57,7 +57,7 @@ const AdminShows = () => {
   const [prices, setPrices] = useState(defaultPrices);
   const [loading, setLoading] = useState(true);
   const [publishing, setPublishing] = useState(false);
-  const [syncing, setSyncing] = useState(false);
+
   const [movieSearch, setMovieSearch] = useState("");
   const [movieLanguage, setMovieLanguage] = useState("all");
   const [movieGenre, setMovieGenre] = useState("all");
@@ -194,23 +194,7 @@ const AdminShows = () => {
     setPrices((previous) => ({ ...previous, [key]: value }));
   };
 
-  const handleSyncMovies = async () => {
-    setSyncing(true);
-    try {
-      const response = await syncMoviesFromTmdb({ pages: 1 });
-      const result = response.data?.result;
-      toast.success(
-        `TMDB sync complete. Added ${result?.upsertedCount || 0}, updated ${
-          result?.modifiedCount || 0
-        }.`,
-      );
-      await loadAdminData();
-    } catch (error) {
-      toast.error(error?.response?.data?.message || "TMDB sync failed");
-    } finally {
-      setSyncing(false);
-    }
-  };
+
 
   const publishShow = async (event) => {
     event.preventDefault();
@@ -339,15 +323,7 @@ const AdminShows = () => {
             </h1>
           </div>
 
-          <button
-            type="button"
-            onClick={handleSyncMovies}
-            disabled={syncing}
-            className="inline-flex items-center justify-center gap-2 rounded-xl border border-black/10 bg-white px-3 py-2 text-[13px] font-black text-[#171717] shadow-sm transition hover:border-[#8f46ff] hover:text-[#8f46ff] disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            <RefreshCw size={16} className={syncing ? "animate-spin" : ""} />
-            {syncing ? "Syncing" : "Sync TMDB"}
-          </button>
+
         </div>
 
         <div className="mb-5 grid gap-2 sm:grid-cols-3">

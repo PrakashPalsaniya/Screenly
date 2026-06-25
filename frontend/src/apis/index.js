@@ -17,8 +17,7 @@ export const getShowById = (data) => axiosWrapper.get(`/shows/${data}`);
 export const createShow = (data) => axiosWrapper.post("/shows", data);
 export const createBulkShows = (data) => axiosWrapper.post("/shows/bulk", data);
 export const getAllTheaters = () => axiosWrapper.get("/theaters");
-export const syncMoviesFromTmdb = (data = {}) =>
-  axiosWrapper.post("/movies/sync-tmdb", data);
+
 
 // Authentication APIS
 export const login = (data) => axiosWrapper.post("/auth/login", data);
