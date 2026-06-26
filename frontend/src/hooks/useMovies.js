@@ -1,13 +1,15 @@
 import { useGetMoviesQuery, useGetMovieByIdQuery, useGetAllMoviesAdminQuery } from '../redux/apiSlice';
 
-export const useMovies = ({ page = 1, limit = 12 } = {}) => {
-  const { data, isLoading, error, refetch } = useGetMoviesQuery({ page, limit });
+export const useMovies = (params = {}) => {
+  const { data, isLoading, isFetching, error, refetch } = useGetMoviesQuery(params);
   return {
-    movies: data?.movies || [],
-    total: data?.total || 0,
-    totalPages: data?.totalPages || 1,
-    currentPage: data?.page || 1,
-    loading: isLoading,
+    movies:      data?.movies      || [],
+    total:       data?.total       || 0,
+    totalPages:  data?.totalPages  || 1,
+    currentPage: data?.page        || 1,
+    hasNextPage: data?.hasNextPage ?? false,
+    loading:     isLoading,
+    fetching:    isFetching,
     error,
     refetch,
   };
@@ -24,6 +26,4 @@ export const useAllMoviesAdmin = () => {
   return { movies: data?.movies || [], loading: isLoading, error };
 };
 
-export const useClearMoviesError = () => {
-  return () => {};
-};
+export const useClearMoviesError = () => () => {};

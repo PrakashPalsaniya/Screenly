@@ -29,12 +29,34 @@ export const apiSlice = createApi({
   baseQuery: axiosBaseQuery(),
   tagTypes: ['Movie', 'Show', 'Theater', 'Booking'],
   endpoints: (builder) => ({
+    // Infinite scroll: same cache key regardless of page, new pages merged in
     getMovies: builder.query({
-      query: ({ page = 1, limit = 12 } = {}) => ({
+      query: ({ page = 1, limit = 12, search = '', genre = '', language = '', sort = 'featured' } = {}) => ({
         url: '/movies',
         method: 'GET',
-        params: { page, limit },
+        params: { page, limit, search, genre, language, sort },
       }),
+      // All pages share one cache entry — keyed by filters only (not page)
+      serializeQueryArgs: ({ queryArgs }) => {
+        const { page, ...filters } = queryArgs || {};
+        return JSON.stringify(filters);
+      },
+      // Merge new page results into existing cached movies array
+      merge: (currentCache, newData) => {
+        if (newData.page === 1) {
+          // Reset on filter change
+          currentCache.movies = newData.movies;
+        } else {
+          currentCache.movies.push(...newData.movies);
+        }
+        currentCache.total = newData.total;
+        currentCache.page = newData.page;
+        currentCache.totalPages = newData.totalPages;
+        currentCache.hasNextPage = newData.hasNextPage;
+      },
+      // Refetch when page number changes
+      forceRefetch: ({ currentArg, previousArg }) =>
+        currentArg?.page !== previousArg?.page,
       providesTags: ['Movie'],
     }),
     getAllMoviesAdmin: builder.query({
