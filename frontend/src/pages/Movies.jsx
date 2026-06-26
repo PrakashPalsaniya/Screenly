@@ -1,29 +1,30 @@
-import { useEffect, useMemo, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { SlidersHorizontal } from "lucide-react";
 import BannerSlider from "../components/shared/BannerSlider";
 import FilterDialog from "../components/movies/FilterDialog";
 import MovieList from "../components/movies/MovieList";
 import { useMovies } from "../hooks/useMovies";
+import { getMovieGenres, getMovieLanguages, getMovieYear } from "../utils";
 
-import {
-  getMovieGenres,
-  getMovieLanguages,
-  getMovieYear,
-} from "../utils";
+const MOVIES_PER_PAGE = 12;
 
 const Movies = () => {
-  const dispatch = useDispatch();
-  const { movies, loading, error } = useMovies();
   const [searchParams, setSearchParams] = useSearchParams();
   const [selectedLanguages, setSelectedLanguages] = useState([]);
   const [selectedGenres, setSelectedGenres] = useState([]);
   const [sortBy, setSortBy] = useState(searchParams.get("sort") || "featured");
   const [isFilterDialogOpen, setIsFilterDialogOpen] = useState(false);
+  const [clientPage, setClientPage] = useState(1);
+
   const searchValue = searchParams.get("q") || "";
 
-
+  // Server-side: always fetch page 1 with high limit so filters work on full dataset
+  // For a small dataset (< 200 movies) this is fine — scales naturally
+  const { movies, total, totalPages: serverTotalPages, loading, error } = useMovies({
+    page: 1,
+    limit: 100,
+  });
 
   const availableGenres = useMemo(() => {
     const genreSet = new Set();
@@ -35,12 +36,11 @@ const Movies = () => {
 
   const topGenres = availableGenres.slice(0, 5);
 
-
-
-  const visibleMovies = useMemo(() => {
+  // Client-side filter + sort on the fetched batch
+  const filteredMovies = useMemo(() => {
     const normalizedQuery = searchValue.trim().toLowerCase();
 
-    const filteredMovies = (movies ?? []).filter((movie) => {
+    const filtered = (movies ?? []).filter((movie) => {
       const title = movie?.title?.toLowerCase() || "";
       const genres = getMovieGenres(movie);
       const movieLanguages = getMovieLanguages(movie);
@@ -51,66 +51,58 @@ const Movies = () => {
         genres.some((genre) => genre.toLowerCase().includes(normalizedQuery));
 
       const matchesGenres =
-        !selectedGenres.length || selectedGenres.some((genre) => genres.includes(genre));
+        !selectedGenres.length || selectedGenres.some((g) => genres.includes(g));
 
       const matchesLanguages =
         !selectedLanguages.length ||
-        selectedLanguages.some((language) => movieLanguages.includes(language));
+        selectedLanguages.some((l) => movieLanguages.includes(l));
 
       return matchesQuery && matchesGenres && matchesLanguages;
     });
 
-    const sortedMovies = [...filteredMovies];
+    const sorted = [...filtered];
+    if (sortBy === "rating") sorted.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+    else if (sortBy === "title") sorted.sort((a, b) => (a.title || "").localeCompare(b.title || ""));
+    else if (sortBy === "newest") sorted.sort((a, b) => getMovieYear(b) - getMovieYear(a));
 
-    if (sortBy === "rating") {
-      sortedMovies.sort((a, b) => (b.rating || 0) - (a.rating || 0));
-    } else if (sortBy === "title") {
-      sortedMovies.sort((a, b) => (a.title || "").localeCompare(b.title || ""));
-    } else if (sortBy === "newest") {
-      sortedMovies.sort((a, b) => getMovieYear(b) - getMovieYear(a));
-    }
-
-    return sortedMovies;
+    return sorted;
   }, [movies, searchValue, selectedGenres, selectedLanguages, sortBy]);
 
+  // Client-side pagination over filtered results
+  const totalPages = Math.ceil(filteredMovies.length / MOVIES_PER_PAGE);
+  const paginatedMovies = filteredMovies.slice(
+    (clientPage - 1) * MOVIES_PER_PAGE,
+    clientPage * MOVIES_PER_PAGE
+  );
+
+  // Reset to page 1 whenever filters change
   const toggleItem = (value, setter) => {
-    setter((previous) =>
-      previous.includes(value)
-        ? previous.filter((item) => item !== value)
-        : [...previous, value],
-    );
+    setClientPage(1);
+    setter((prev) => prev.includes(value) ? prev.filter((i) => i !== value) : [...prev, value]);
   };
 
   const updateSearchValue = (value) => {
+    setClientPage(1);
     const nextParams = new URLSearchParams(searchParams);
-    if (value.trim()) {
-      nextParams.set("q", value);
-    } else {
-      nextParams.delete("q");
-    }
+    if (value.trim()) nextParams.set("q", value);
+    else nextParams.delete("q");
     setSearchParams(nextParams, { replace: true });
   };
 
   const updateSortValue = (value) => {
+    setClientPage(1);
     setSortBy(value);
     const nextParams = new URLSearchParams(searchParams);
-    if (value !== "featured") {
-      nextParams.set("sort", value);
-    } else {
-      nextParams.delete("sort");
-    }
+    if (value !== "featured") nextParams.set("sort", value);
+    else nextParams.delete("sort");
     setSearchParams(nextParams, { replace: true });
-  };
-
-  const clearSection = (section) => {
-    if (section === "languages") setSelectedLanguages([]);
-    if (section === "genres") setSelectedGenres([]);
   };
 
   const resetAllFilters = () => {
     setSelectedLanguages([]);
     setSelectedGenres([]);
     setSortBy("featured");
+    setClientPage(1);
     setSearchParams({}, { replace: true });
   };
 
@@ -155,15 +147,21 @@ const Movies = () => {
           onClear={resetAllFilters}
         />
 
-        {/* Movie List */}
+        {/* Movie List with Pagination */}
         <MovieList
-          allMovies={visibleMovies}
+          allMovies={paginatedMovies}
           loading={loading}
           error={error}
-          resultCount={visibleMovies.length}
+          resultCount={filteredMovies.length}
           searchValue={searchValue}
           sortLabel={sortLabelMap[sortBy] || "featured"}
           onResetFilters={resetAllFilters}
+          currentPage={clientPage}
+          totalPages={totalPages}
+          onPageChange={(page) => {
+            setClientPage(page);
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }}
         />
       </div>
     </div>

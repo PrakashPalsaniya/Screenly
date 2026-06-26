@@ -14,7 +14,7 @@ import {
   Send,
   SlidersHorizontal,
 } from "lucide-react";
-import { createBulkShows, getAllMovies, getAllTheaters } from "../apis";
+import { createBulkShows, getAllTheaters, axiosWrapper } from "../apis";
 import AdminFilterDialog from "../components/admin/AdminFilterDialog";
 import {
   getMovieCertification,
@@ -154,7 +154,7 @@ const AdminShows = () => {
     setLoading(true);
     try {
       const [moviesResponse, theatersResponse] = await Promise.all([
-        getAllMovies(),
+        axiosWrapper.get("/movies/all"),
         getAllTheaters(),
       ]);
       setMovies(moviesResponse.data?.movies ?? []);

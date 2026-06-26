@@ -30,7 +30,15 @@ export const apiSlice = createApi({
   tagTypes: ['Movie', 'Show', 'Theater', 'Booking'],
   endpoints: (builder) => ({
     getMovies: builder.query({
-      query: () => ({ url: '/movies', method: 'GET' }),
+      query: ({ page = 1, limit = 12 } = {}) => ({
+        url: '/movies',
+        method: 'GET',
+        params: { page, limit },
+      }),
+      providesTags: ['Movie'],
+    }),
+    getAllMoviesAdmin: builder.query({
+      query: () => ({ url: '/movies/all', method: 'GET' }),
       providesTags: ['Movie'],
     }),
     getMovieById: builder.query({
@@ -86,6 +94,7 @@ export const apiSlice = createApi({
 
 export const {
   useGetMoviesQuery,
+  useGetAllMoviesAdminQuery,
   useGetMovieByIdQuery,
   useGetShowsByMovieAndLocationQuery,
   useGetShowByIdQuery,

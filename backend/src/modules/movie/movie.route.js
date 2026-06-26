@@ -7,16 +7,13 @@ const { isVerifiedUser, isAdmin } = require("../../middlewares/auth.middleware")
 
 const router = express.Router();
 
-// Admin: manually create a single movie entry
-router.post(
-  "/",
-  isVerifiedUser,
-  isAdmin,
-  validate(MovieSchema),
-  MovieController.createMovie
-);
+// Admin: create a single movie entry
+router.post("/", isVerifiedUser, isAdmin, validate(MovieSchema), MovieController.createMovie);
 
-// Public: read endpoints
+// Admin: full unpaginated list for show creation
+router.get("/all", isVerifiedUser, isAdmin, MovieController.getAllMoviesUnpaginated);
+
+// Public: paginated movies — GET /movies?page=1&limit=12
 router.get("/", MovieController.getMovies);
 router.get("/recommended", MovieController.getTopRecommendedMovies);
 router.get("/:id", MovieController.getMovieById);
