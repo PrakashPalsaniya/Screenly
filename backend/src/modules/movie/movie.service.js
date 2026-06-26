@@ -5,13 +5,45 @@ const createMovie = async (movie) => {
   return await MovieModel.create(movie);
 };
 
-// 2. getAllMovies — with server-side pagination
-const getAllMovies = async ({ page = 1, limit = 12 } = {}) => {
+// 2. getAllMovies — server-side pagination + filtering + sorting
+const getAllMovies = async ({ page = 1, limit = 12, search, genre, language, sort } = {}) => {
   const skip = (page - 1) * limit;
 
+  // Build filter query
+  const filter = {};
+
+  if (search?.trim()) {
+    const searchRegex = { $regex: search.trim(), $options: "i" };
+    filter.$or = [
+      { title: searchRegex },
+      { genre: searchRegex },
+    ];
+  }
+  if (genre) {
+    const genreList = genre.split(",").map((g) => g.trim()).filter(Boolean);
+    if (genreList.length > 0) {
+      filter.genre = { $in: genreList };
+    }
+  }
+  if (language) {
+    const languageList = language.split(",").map((l) => l.trim()).filter(Boolean);
+    if (languageList.length > 0) {
+      filter.languages = { $in: languageList };
+    }
+  }
+
+  // Build sort
+  const sortMap = {
+    rating:   { rating: -1 },
+    title:    { title: 1 },
+    newest:   { releaseDate: -1 },
+    featured: { releaseDate: -1 },
+  };
+  const sortQuery = sortMap[sort] || sortMap.featured;
+
   const [movies, total] = await Promise.all([
-    MovieModel.find().sort({ releaseDate: -1 }).skip(skip).limit(limit),
-    MovieModel.countDocuments(),
+    MovieModel.find(filter).sort(sortQuery).skip(skip).limit(limit),
+    MovieModel.countDocuments(filter),
   ]);
 
   return {
@@ -20,10 +52,11 @@ const getAllMovies = async ({ page = 1, limit = 12 } = {}) => {
     page,
     limit,
     totalPages: Math.ceil(total / limit),
+    hasNextPage: page * limit < total,
   };
 };
 
-// 3. getAllMoviesUnpaginated — used by Admin panel (needs full list for show creation)
+// 3. getAllMoviesUnpaginated — Admin only (for show creation dropdown)
 const getAllMoviesUnpaginated = async () => {
   return await MovieModel.find().sort({ releaseDate: -1 });
 };

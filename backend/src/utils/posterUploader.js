@@ -67,7 +67,7 @@ async function uploadOnePoster(movie) {
       timeout: 15_000,
       headers: {
         // TMDB doesn't require auth for image CDN, but include a UA for safety
-        "User-Agent": "CineBook/1.0",
+        "User-Agent": "Screenly/1.0",
       },
     }
   );
@@ -109,7 +109,7 @@ async function uploadOneBackdrop(movie) {
     {
       responseType: "arraybuffer",
       timeout: 15_000,
-      headers: { "User-Agent": "CineBook/1.0" },
+      headers: { "User-Agent": "Screenly/1.0" },
     }
   );
 
@@ -217,7 +217,7 @@ async function uploadTheaterLogo(brand, imageUrl) {
   const response = await axios.get(imageUrl, {
     responseType: "arraybuffer",
     timeout: 15_000,
-    headers: { "User-Agent": "CineBook/1.0" },
+    headers: { "User-Agent": "Screenly/1.0" },
   });
 
   await s3.send(

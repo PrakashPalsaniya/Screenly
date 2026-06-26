@@ -9,13 +9,14 @@ const createMovie = async (req, res, next) => {
   }
 };
 
-// GET /api/v1/movies?page=1&limit=12
+// GET /api/v1/movies?page=1&limit=12&search=avtar&genre=Action&language=Hindi&sort=rating
 const getMovies = async (req, res, next) => {
   try {
-    const page = Math.max(1, Number(req.query.page) || 1);
+    const page  = Math.max(1, Number(req.query.page)  || 1);
     const limit = Math.min(50, Math.max(1, Number(req.query.limit) || 12));
+    const { search, genre, language, sort } = req.query;
 
-    const result = await MovieService.getAllMovies({ page, limit });
+    const result = await MovieService.getAllMovies({ page, limit, search, genre, language, sort });
     res.status(200).json(result);
   } catch (error) {
     next(error);

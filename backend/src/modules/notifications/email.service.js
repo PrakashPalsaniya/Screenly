@@ -3,7 +3,7 @@ const { config } = require("../../config/config");
 
 const appName = "Screenly";
 const appHomeUrl = process.env.FRONTEND_URL || "#";
-const appLogo = process.env.SCREENLY_LOGO_URL || process.env.CINEBOOK_LOGO_URL || null;
+const appLogo = process.env.SCREENLY_LOGO_URL || null;
 
 const transporter = nodemailer.createTransport({
   service: "gmail",
