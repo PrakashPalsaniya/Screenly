@@ -106,7 +106,7 @@ const mapTmdbMovie = (movie, region) => {
     languages,
     originalLanguage: movie.original_language,
     certification:    getCertification(movie.release_dates, region),
-    posterUrl:        movie.poster_path ? `https://image.tmdb.org/t/p/w780${movie.poster_path}` : "https://placehold.co/780x1170?text=CineBook",
+    posterUrl:        movie.poster_path ? `https://image.tmdb.org/t/p/w780${movie.poster_path}` : "https://placehold.co/780x1170?text=Screenly",
     backdropUrl:      movie.backdrop_path ? `https://image.tmdb.org/t/p/w1280${movie.backdrop_path}` : "",
     tmdbPosterPath:   movie.poster_path || "",
     tmdbBackdropPath: movie.backdrop_path || "",
@@ -139,7 +139,7 @@ async function uploadImageToS3(movieId, path, folder, size) {
     const response = await axios.get(`https://image.tmdb.org/t/p/${size}${path}`, {
       responseType: "arraybuffer",
       timeout: 15000,
-      headers: { "User-Agent": "CineBook/1.0" },
+      headers: { "User-Agent": "Screenly/1.0" },
     });
 
     await s3.send(
@@ -203,7 +203,7 @@ async function fetchNewMovieDetails() {
 exports.handler = async (event, context) => {
   context.callbackWaitsForEmptyEventLoop = false;
 
-  console.log("🚀 CineBook TMDB Midnight Sync started...");
+  console.log("🚀 Screenly TMDB Midnight Sync started...");
 
   if (!CONFIG.tmdbToken || !CONFIG.mongoUri) {
     throw new Error("Missing env vars: TMDB_ACCESS_TOKEN or MONGO_CONNECTION_STRING");
