@@ -34,6 +34,24 @@ export const languages = [
   "Telugu",
 ];
 
+export const genres = [
+  "Action",
+  "Adventure",
+  "Animation",
+  "Comedy",
+  "Documentary",
+  "Drama",
+  "Fantasy",
+  "Horror",
+  "Mythological",
+  "Mystery",
+  "Period",
+  "Romance",
+  "Sci-Fi",
+  "Sports",
+  "Thriller",
+];
+
 export const banners = [banner1, banner2, banner3, banner4];
 
 export const movies = [

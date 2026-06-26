@@ -1,82 +1,45 @@
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useEffect, useRef } from "react";
 import MovieCard from "./MovieCard";
 import MovieSkeleton from "../shared/MovieSkeleton";
-
-const Pagination = ({ currentPage, totalPages, onPageChange }) => {
-  if (totalPages <= 1) return null;
-
-  const getPageNumbers = () => {
-    const pages = [];
-    const delta = 1; // pages on each side of current
-
-    const left = Math.max(2, currentPage - delta);
-    const right = Math.min(totalPages - 1, currentPage + delta);
-
-    pages.push(1);
-    if (left > 2) pages.push("...");
-    for (let i = left; i <= right; i++) pages.push(i);
-    if (right < totalPages - 1) pages.push("...");
-    if (totalPages > 1) pages.push(totalPages);
-
-    return pages;
-  };
-
-  return (
-    <div className="mt-10 flex items-center justify-center gap-1.5">
-      {/* Prev */}
-      <button
-        onClick={() => onPageChange(currentPage - 1)}
-        disabled={currentPage === 1}
-        className="flex h-9 w-9 items-center justify-center rounded-xl border border-black/10 bg-white text-[#171717] transition hover:border-[#8f46ff] hover:text-[#8f46ff] disabled:cursor-not-allowed disabled:opacity-40"
-      >
-        <ChevronLeft size={16} />
-      </button>
-
-      {/* Page Numbers */}
-      {getPageNumbers().map((page, i) =>
-        page === "..." ? (
-          <span key={`ellipsis-${i}`} className="px-1 text-[13px] text-[#6f6660]">
-            …
-          </span>
-        ) : (
-          <button
-            key={page}
-            onClick={() => onPageChange(page)}
-            className={`flex h-9 min-w-[36px] items-center justify-center rounded-xl border px-2.5 text-[13px] font-bold transition ${
-              currentPage === page
-                ? "border-[#8f46ff] bg-[#8f46ff] text-white"
-                : "border-black/10 bg-white text-[#171717] hover:border-[#8f46ff] hover:text-[#8f46ff]"
-            }`}
-          >
-            {page}
-          </button>
-        )
-      )}
-
-      {/* Next */}
-      <button
-        onClick={() => onPageChange(currentPage + 1)}
-        disabled={currentPage === totalPages}
-        className="flex h-9 w-9 items-center justify-center rounded-xl border border-black/10 bg-white text-[#171717] transition hover:border-[#8f46ff] hover:text-[#8f46ff] disabled:cursor-not-allowed disabled:opacity-40"
-      >
-        <ChevronRight size={16} />
-      </button>
-    </div>
-  );
-};
 
 const MovieList = ({
   allMovies,
   loading,
+  fetching,
   error,
   resultCount,
   searchValue,
   sortLabel,
   onResetFilters,
-  currentPage = 1,
-  totalPages = 1,
-  onPageChange,
+  hasNextPage,
+  onLoadMore,
 }) => {
+  const sentinelRef = useRef(null);
+
+  useEffect(() => {
+    if (!hasNextPage || fetching || loading || error) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          onLoadMore();
+        }
+      },
+      { threshold: 0.1, rootMargin: "150px" }
+    );
+
+    const currentSentinel = sentinelRef.current;
+    if (currentSentinel) {
+      observer.observe(currentSentinel);
+    }
+
+    return () => {
+      if (currentSentinel) {
+        observer.unobserve(currentSentinel);
+      }
+    };
+  }, [hasNextPage, fetching, loading, error, onLoadMore]);
+
   return (
     <div className="w-full">
       {/* Header */}
@@ -90,7 +53,6 @@ const MovieList = ({
           </h3>
           <p className="mt-1 text-[13px] text-[#6f6660]">
             {resultCount} titles | sorted by {sortLabel}
-            {totalPages > 1 && ` | Page ${currentPage} of ${totalPages}`}
           </p>
         </div>
         <button
@@ -105,7 +67,11 @@ const MovieList = ({
       {/* Content */}
       {loading ? (
         <div className="grid grid-cols-3 gap-x-3 gap-y-5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
-          {Array(12).fill(0).map((_, i) => <MovieSkeleton key={i} />)}
+          {Array(12)
+            .fill(0)
+            .map((_, i) => (
+              <MovieSkeleton key={i} />
+            ))}
         </div>
       ) : error ? (
         <div className="cine-card rounded-2xl px-5 py-8 text-center text-[13px] text-[#b4233f]">
@@ -138,12 +104,22 @@ const MovieList = ({
             ))}
           </div>
 
-          {/* Pagination Controls */}
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={onPageChange}
-          />
+          {/* Fetching more indicators */}
+          {fetching && (
+            <div className="mt-8 flex flex-col items-center justify-center gap-3">
+              <div className="flex items-center gap-1.5">
+                <span className="h-2 w-2 animate-bounce rounded-full bg-[#8f46ff]" style={{ animationDelay: "0ms" }} />
+                <span className="h-2 w-2 animate-bounce rounded-full bg-[#8f46ff]" style={{ animationDelay: "150ms" }} />
+                <span className="h-2 w-2 animate-bounce rounded-full bg-[#8f46ff]" style={{ animationDelay: "300ms" }} />
+              </div>
+              <p className="text-[12px] font-bold tracking-wider text-[#8f46ff] uppercase animate-pulse">
+                Loading more movies...
+              </p>
+            </div>
+          )}
+
+          {/* Sentinel for Infinite Scroll */}
+          <div ref={sentinelRef} className="h-10 w-full" />
         </>
       )}
     </div>

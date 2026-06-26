@@ -94,7 +94,7 @@ export const getPosterUrl = (movie) => {
   if (CLOUDFRONT_DOMAIN && movie?.tmdbId) {
     return `https://${CLOUDFRONT_DOMAIN}/posters/${movie.tmdbId}.jpg`;
   }
-  return movie?.posterUrl || "https://placehold.co/500x750?text=CineBook";
+  return movie?.posterUrl || "https://placehold.co/500x750?text=Screenly";
 };
 
 /**
