@@ -6,7 +6,7 @@ services:
   # Redis for Seat Locking
   redis:
     image: redis:alpine
-    container_name: cinebook-redis
+    container_name: screenly-redis
     ports:
       - "${REDIS_PORT:-6379}:6379"
     deploy:
@@ -17,7 +17,7 @@ services:
   # RabbitMQ for Email Notifications
   rabbitmq:
     image: rabbitmq:3-management-alpine
-    container_name: cinebook-rabbitmq
+    container_name: screenly-rabbitmq
     ports:
       - "${RABBITMQ_PORT:-5672}:5672"
       - "${RABBITMQ_MANAGEMENT_PORT:-15672}:15672"
@@ -29,7 +29,7 @@ services:
   # Backend API
   backend:
     build: ./backend
-    container_name: cinebook-backend
+    container_name: screenly-backend
     ports:
       - "${BACKEND_PORT:-5002}:${PORT:-5002}"
     env_file:
@@ -57,7 +57,7 @@ services:
         - VITE_BACKEND_URL=${VITE_BACKEND_URL:-http://localhost:5002/api/v1}
         - VITE_RAZORPAY_API_KEY=${VITE_RAZORPAY_API_KEY}
         - VITE_CLOUDFRONT_DOMAIN=${VITE_CLOUDFRONT_DOMAIN}
-    container_name: cinebook-frontend
+    container_name: screenly-frontend
     ports:
       - "${FRONTEND_PORT:-5173}:80"
     depends_on:
