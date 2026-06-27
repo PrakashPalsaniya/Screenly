@@ -7,6 +7,13 @@ const redisConnectionOptions = {
   retryStrategy: () => 5000,
 };
 
+if (config.redisPassword) {
+  redisConnectionOptions.password = config.redisPassword;
+}
+if (config.redisUsername) {
+  redisConnectionOptions.username = config.redisUsername;
+}
+
 const redisClient = new Redis(redisConnectionOptions);
 
 redisClient.on("error", (error) => {

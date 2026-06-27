@@ -31,6 +31,8 @@ const config = Object.freeze({
   emailPassword: process.env.EMAIL_PASSWORD,
   redisHost: process.env.REDIS_HOST,
   redisPort: Number(process.env.REDIS_PORT || 6379),
+  redisPassword: process.env.REDIS_PASSWORD || null,
+  redisUsername: process.env.REDIS_USERNAME || "default",
   razorpayKey: process.env.RAZORPAY_API_KEY,
   razorpaySecret: process.env.RAZORPAY_SECRET_KEY,
   tmdbAccessToken:
